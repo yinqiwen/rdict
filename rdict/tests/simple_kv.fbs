@@ -1,0 +1,12 @@
+// Example IDL file for our monster's schema.
+
+namespace test.rdict;
+
+table DictEntry {
+  name:string(key);
+  mana:short = 150;
+  hp:short = 100;
+  id:long;
+}
+
+root_type DictEntry;
