@@ -53,11 +53,11 @@ absl::Status MmapFile::Init(const Options& opts) {
     int file_flags = 0;
     if (!opts.readonly) {
       file_flags = O_RDWR | O_CREAT | O_CLOEXEC;
-    } else {
-      file_flags = O_RDONLY | O_CLOEXEC;
       if (opts.truncate) {
         file_flags = file_flags | O_TRUNC;
       }
+    } else {
+      file_flags = O_RDONLY | O_CLOEXEC;
     }
     int mode = 0644;
     segment_file = std::make_unique<folly::File>(opts.path, file_flags, mode);
