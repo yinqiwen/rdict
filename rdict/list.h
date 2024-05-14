@@ -44,6 +44,7 @@ class ReadonlyList {
     std::string path;
     size_t reserved_space_bytes = 100 * 1024 * 1024 * 1024LL;
     bool readonly = false;
+    bool truncate = false;
   };
   static absl::StatusOr<std::unique_ptr<ReadonlyList>> New(const Options& opt);
   absl::Status Add(std::string_view s);

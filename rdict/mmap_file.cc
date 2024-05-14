@@ -29,6 +29,7 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include "rdict/mmap_file.h"
+#include <fcntl.h>
 #include <sys/mman.h>
 #include "folly/File.h"
 #include "folly/FileUtil.h"
@@ -54,6 +55,9 @@ absl::Status MmapFile::Init(const Options& opts) {
       file_flags = O_RDWR | O_CREAT | O_CLOEXEC;
     } else {
       file_flags = O_RDONLY | O_CLOEXEC;
+      if (opts.truncate) {
+        file_flags = file_flags | O_TRUNC;
+      }
     }
     int mode = 0644;
     segment_file = std::make_unique<folly::File>(opts.path, file_flags, mode);

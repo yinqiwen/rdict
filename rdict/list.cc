@@ -77,6 +77,7 @@ absl::Status ReadonlyList::Init(const Options& opt) {
   data_opts.path = data_path;
   data_opts.readonly = opt.readonly;
   data_opts.reserved_space_bytes = opt.reserved_space_bytes;
+  data_opts.truncate = opt.truncate;
 
   auto data_file_result = MmapFile::Open(data_opts);
   if (!data_file_result.ok()) {

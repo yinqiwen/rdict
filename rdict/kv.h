@@ -278,6 +278,7 @@ class ReadonlyKV {
     size_t bucket_count = 0;
     float max_load_factor = k_default_max_load_factor;
     bool readonly = false;
+    bool truncate = false;
   };
 
   static absl::StatusOr<std::unique_ptr<ReadonlyKV>> New(const Options& opt);
@@ -484,6 +485,7 @@ absl::Status ReadonlyKV<K, V, H, E>::Init(const Options& opt) {
   data_opts.path = data_path;
   data_opts.readonly = opt.readonly;
   data_opts.reserved_space_bytes = opt.reserved_space_bytes;
+  data_opts.truncate = opt.truncate;
 
   auto data_file_result = MmapFile::Open(data_opts);
   if (!data_file_result.ok()) {
