@@ -454,7 +454,7 @@ absl::Status ReadonlyKV<K, V, H, E>::LoadIndex(bool ignore_nonexist) {
     return absl::OkStatus();
   }
   if (data_mmap_file_->GetWriteOffset() < detail::kRdictMetaHeaderSize) {
-    printf("data_mmap_file_->GetWriteOffset()::%lld\n", data_mmap_file_->GetWriteOffset());
+    // printf("data_mmap_file_->GetWriteOffset()::%lld\n", data_mmap_file_->GetWriteOffset());
     return absl::InvalidArgumentError("invalid rdict file with too small length");
   }
   if (opt_.readonly) {

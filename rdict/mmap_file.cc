@@ -64,8 +64,8 @@ absl::Status MmapFile::Init(const Options& opts) {
     struct stat st;
     int rc = fstat(segment_file->fd(), &st);
     if (rc != 0) {
-      int err = errno;
-      return absl::ErrnoToStatus(err, "fstat failed for  file path:" + opts.path);
+      // int err = errno;
+      return absl::InvalidArgumentError("fstat failed for  file path:" + opts.path);
     }
     file_size = st.st_size;
     write_offset_ = file_size;
@@ -80,8 +80,8 @@ absl::Status MmapFile::Init(const Options& opts) {
       }
       int rc = ftruncate(segment_file->fd(), file_size);
       if (rc != 0) {
-        int err = errno;
-        return absl::ErrnoToStatus(err, "truncate failed for  file path:" + opts.path);
+        // int err = errno;
+        return absl::InvalidArgumentError("truncate failed for  file path:" + opts.path);
       }
     }
   } catch (...) {
@@ -98,7 +98,7 @@ absl::Status MmapFile::Init(const Options& opts) {
   opts_.reserved_space_bytes = reserved_space_bytes;
   void* reserved_addr_space = mmap(nullptr, reserved_space_bytes, PROT_READ, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
   if (reserved_addr_space == MAP_FAILED) {
-    return absl::ErrnoToStatus(errno, "create space");
+    return absl::InvalidArgumentError("create space");
   }
   int mmap_flags = 0;
   if (opts.readonly) {
@@ -108,7 +108,7 @@ absl::Status MmapFile::Init(const Options& opts) {
   }
   void* mapping_addr = mmap(reserved_addr_space, file_size, PROT_READ | PROT_WRITE, mmap_flags, segment_file->fd(), 0);
   if (mapping_addr == MAP_FAILED) {
-    return absl::ErrnoToStatus(errno, "mmap file failed");
+    return absl::InvalidArgumentError("mmap file failed");
   }
   data_ = reinterpret_cast<uint8_t*>(mapping_addr);
   return absl::OkStatus();
@@ -128,8 +128,8 @@ absl::Status MmapFile::ExtendBuffer(size_t len) {
     struct stat st;
     int rc = fstat(mmap_file->fd(), &st);
     if (rc != 0) {
-      int err = errno;
-      return absl::ErrnoToStatus(err, "fstat failed for file path:" + opts_.path);
+      // int err = errno;
+      return absl::InvalidArgumentError("fstat failed for file path:" + opts_.path);
     }
     size_t file_size = st.st_size;
     if (file_size != capacity_) {
@@ -137,8 +137,8 @@ absl::Status MmapFile::ExtendBuffer(size_t len) {
     }
     rc = ftruncate(mmap_file->fd(), new_file_len);
     if (rc != 0) {
-      int err = errno;
-      return absl::ErrnoToStatus(err, "truncate failed for file path:" + opts_.path);
+      // int err = errno;
+      return absl::InvalidArgumentError("truncate failed for file path:" + opts_.path);
     }
   } catch (...) {
     return absl::InvalidArgumentError("invalid mmap file path:" + opts_.path);
@@ -148,7 +148,7 @@ absl::Status MmapFile::ExtendBuffer(size_t len) {
   void* mapping_addr =
       mmap(mmap_start_addr, extend_len, PROT_READ | PROT_WRITE, mmap_flags, mmap_file->fd(), capacity_);
   if (mapping_addr == MAP_FAILED) {
-    return absl::ErrnoToStatus(errno, "mmap file failed");
+    return absl::InvalidArgumentError("mmap file failed");
   }
   capacity_ = new_file_len;
   return absl::OkStatus();
@@ -177,7 +177,7 @@ absl::StatusOr<size_t> MmapFile::ShrinkToFit() {
   }
   int rc = folly::truncateNoInt(opts_.path.c_str(), write_offset_);
   if (0 != rc) {
-    return absl::ErrnoToStatus(errno, "shrink to fit file truncate failed");
+    return absl::InvalidArgumentError("shrink to fit file truncate failed");
   }
 
   return write_offset_;
